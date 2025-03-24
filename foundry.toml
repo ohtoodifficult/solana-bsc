@@ -1,5 +1,5 @@
 [profile.default]
-src = 'contracts'
+src = 'contracts1'
 test = 'test'
 script = 'foundry-script'
 out = 'out'

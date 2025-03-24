@@ -9,7 +9,7 @@
     "constantinopleBlock": 0,
     "petersburgBlock": 0,
     "istanbulBlock": 0,
-    "muirGlacierBlock": 0,
+    "muirGlacierBlock":1 ,
     "ramanujanBlock": 0,
     "nielsBlock": 0,
     "mirrorSyncBlock":1,
