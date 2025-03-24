@@ -1,95 +1,126 @@
-# bsc-genesis-contracts
+# Solana-BSC Genesis Contracts
 
-This repo hold all the genesis contracts on BNB Smart chain. More details in [doc-site](https://docs.bnbchain.org/docs/learn/system-contract).
+This repository contains the genesis contracts that enable interoperability between **Solana** and **BNB Smart Chain (BSC)**. These contracts are crucial for cross-chain communication, asset transfers, and decentralized applications spanning both networks.
 
-## Prepare
+## 📌 Overview
 
-Install node.js dependency:
-```shell script
+This project provides:
+- Smart contracts for **Solana** and **BSC** to enable seamless cross-chain operations.
+- Scripts for generating **genesis configurations**.
+- Automated tools for contract deployment and testing.
+
+## 🛠️ Setup
+
+### 1️⃣ Install Dependencies
+```sh
 npm install
 ```
 
-Install foundry:
-```shell script
+### 2️⃣ Install Foundry (for BSC contracts)
+```sh
 curl -L https://foundry.paradigm.xyz | bash
 foundryup
 forge install --no-git --no-commit foundry-rs/forge-std@v1.7.3
 ```
 
-Install poetry:
-```shell script
+### 3️⃣ Install Anchor (for Solana contracts)
+```sh
+cargo install --git https://github.com/coral-xyz/anchor avm --locked
+avm install latest
+avm use latest
+```
+
+### 4️⃣ Install Poetry (for Python scripts)
+```sh
 curl -sSL https://install.python-poetry.org | python3 -
 poetry install
 ```
 
-Tips: You can manage multi version of Node:
-```Shell
-## Install nvm and node
+### 5️⃣ Manage Node.js Versions (Optional)
+```sh
+# Install nvm and specific Node.js version
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
-nvm install  12.18.3 && nvm use 12.18.3
+nvm install 12.18.3 && nvm use 12.18.3
 ```
 
-## Unit test
+## 🚀 Running Unit Tests
 
-Add follow line to .env file in project dir, replace `archive_node` with a valid bsc mainnet node url which should be in archive mode:
+Before testing, set up your `.env` file:
 
 ```text
 RPC_BSC=${archive_node}
+RPC_SOLANA=${solana_rpc_node}
 ```
 
-You can get a free archive node endpoint from https://nodereal.io/.
+You can get free RPC endpoints from:
+- **BSC:** [https://nodereal.io/](https://nodereal.io/)
+- **Solana:** [https://www.quicknode.com/](https://www.quicknode.com/)
 
-Run forge test:
-```shell script
+Run tests:
+```sh
+# Test BSC contracts
 forge test
+
+# Test Solana programs
+anchor test
 ```
 
-## Flatten all system contracts
+## 🏗️ Generating Genesis File
 
-```shell script
+1. Modify `init_holders.js` to allocate initial BNB & SOL holders.
+2. Modify `validators.js` for initial validator setup.
+3. Adjust system contract settings as needed.
+4. Run:
+   ```sh
+   node scripts/generate-genesis.js
+   ```
+
+## 🔄 Generating Genesis File for Different Networks
+
+```sh
+poetry run python -m scripts.generate ${network}
+```
+
+For details:
+```sh
+poetry run python -m scripts.generate --help
+```
+
+## 📄 Flattening System Contracts
+
+```sh
 bash scripts/flatten.sh
 ```
 
 All system contracts will be flattened and output into `${workspace}/contracts/flattened/`.
 
-## How to generate genesis file
+## 🔄 Cross-Chain Asset Unlock (BEP-171)
+```sh
+npm install -g ts-node
 
-1. Edit `init_holders.js` file to alloc the initial BNB holder.
-2. Edit `validators.js` file to alloc the initial validator set.
-3. Edit system contracts setting as needed.
-4. Run `node scripts/generate-genesis.js` will generate genesis.json
+cp .env.example .env
+# Set UNLOCK_RECEIVER and OPERATOR_PRIVATE_KEY
 
-## How to generate mainnet/testnet/dev genesis file
-
-```shell 
-poetry run python -m scripts.generate ${network}
+ts-node scripts/bep171-unlock-bot.ts
 ```
-Check the `genesis.json` file, and you can get the exact compiled bytecode for different network.
-(`poetry run python -m scripts.generate --help ` for more details)
 
-You can refer to `generate:dev` in `package.json` for more details about how to custom params for local dev-net.
+## 🛠 Updating Contract Interfaces
 
-## How to update contract interface for test
-
-```shell script
-// get metadata
+### For BSC Contracts:
+```sh
+# Get metadata
 forge build
 
-// generate interface
+# Generate interface
 cast interface ${workspace}/out/{contract_name}.sol/${contract_name}.json -p ^0.8.0 -n ${contract_name} > ${workspace}/test/utils/interface/I${contract_name}.sol
 ```
 
-## BEP-171 unlock bot
-```shell script
-npm install ts-node -g
-
-cp .env.example .env
-# set UNLOCK_RECEIVER, OPERATOR_PRIVATE_KEY to .env
-
-ts-node scripts/bep171-unlock-bot.ts 
+### For Solana Programs:
+```sh
+anchor build
+solana program dump -u ${network} ${program_id} > ${workspace}/idl/${program_name}.json
 ```
 
-## License
+## 📜 License
 
-The library is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0),
-also included in our repository in the [LICENSE](LICENSE) file.
+The project is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
