@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 contract SNB {
     string public name     = "SNB";#Token of solnan bsc
-    string public symbol   = "SNB";
+    string public symbol   = "SNB";#Test ca 0xbc998b3a05a839be8ed7a590415bc781bcc02285 
 	string public ca   = "SNB";
     uint8  public decimals = 18;
 
